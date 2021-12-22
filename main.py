@@ -1,10 +1,12 @@
 # TODO a little description and help
 # ! Python 3
+
+###############################################################################
 # this is a little Program to delete and Blacklist all mails in the spam folder
-#
+###############################################################################
 # 1.
 # 2.
-#3. so on
+# 3. so on
 
 from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
@@ -108,8 +110,13 @@ def read_safe_spam(browser):        # read and safe the spam mails in a list
         mail = next_mail.get_attribute("title").split("<")
         read_safe_spam.mail_list.append(mail[1][:-1])
         try:
-            next_mail = browser.find_element(locate_with(By.CLASS_NAME, "name").below(next_mail))
+             next_mail = browser.find_element(locate_with(By.CLASS_NAME, "name").below(next_mail))
         except:
+            time.sleep(1)
+            try:
+                browser.find_element(By.NAME, "maillist:rowsCheckGroup:paging:container:align:form:next").click()
+            except:
+                break
             break
 
     print("Done")
@@ -135,15 +142,17 @@ def filter_mail(email):    # check if mail is already at Blacklist
     print("Done")
 
 
+
+
 def user_check_mails(email):
     print("Check Mails!\n")
     for i in email:
         for a in i:
-            print("---", end="")
+            print("--", end="")
     print("\n", email)
     for i in email:
         for a in i:
-            print("---", end="")
+            print("--", end="")
     if input("\n\nWant to Blacklist Mails? press ENTER for further or 'N' for Cancel ").lower() == "n":
         return False
     return True
@@ -176,7 +185,7 @@ def blacklisted(browser, email):        # write the mails in the Blacklist
 
 
 if __name__ == "__main__":
-    # TODO - implement wait argument / stuck hard for this part
+    # TODO - implement wait argument / !!!stuck hard in this part!!!
     # TODO - implement a pip progress bar / just for fun
     browser = webdriver.Firefox(executable_path=driver_path)
     wait = WebDriverWait(browser, 10, poll_frequency=1)
@@ -187,6 +196,7 @@ if __name__ == "__main__":
     read_safe_spam(browser)
     email = read_safe_spam.mail_list
     filter_mail(email)
+    email = list(dict.fromkeys(email))
     if len(email) != 0:
         print("\n----------", len(email), "Mails found for the Blacklist-----------\n")
         if user_check_mails(email):
